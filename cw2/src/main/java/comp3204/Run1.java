@@ -1,27 +1,20 @@
 package comp3204;
 
+import comp3204.utility.Data;
+import org.apache.commons.vfs2.FileSystemException;
 import org.openimaj.data.dataset.GroupedDataset;
-import org.openimaj.data.dataset.VFSGroupDataset;
 import org.openimaj.data.dataset.VFSListDataset;
 import org.openimaj.image.FImage;
-import org.openimaj.image.ImageUtilities;
 
-import java.io.File;
+import java.net.URISyntaxException;
 
-/**
- * OpenIMAJ Hello world!
- *
- */
 public class Run1 {
-    public static void main( String[] args ) {
+    public static void main( String[] args ) throws FileSystemException, URISyntaxException {
         
-        try {
-            File file = new File(Run1.class.getClassLoader().getResource("comp3204/training.zip").toURI());
-            String path = file.getAbsolutePath();
-            GroupedDataset<String, VFSListDataset<FImage>, FImage> training = new VFSGroupDataset<>("zip:" + path, ImageUtilities.FIMAGE_READER);
-            System.out.println(training.size());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        GroupedDataset<String, VFSListDataset<FImage>, FImage> training = Data.training();
+        System.out.println(training.size());
+
+        VFSListDataset<FImage> testing = Data.testing();
+        System.out.println(testing.size());
     }
 }
