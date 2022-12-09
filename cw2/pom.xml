@@ -150,7 +150,7 @@
           </descriptorRefs>
           <archive>
             <manifest>
-              <mainClass>comp3204.App</mainClass>
+              <mainClass>comp3204.Run1</mainClass>
             </manifest>
           </archive>
         </configuration>
