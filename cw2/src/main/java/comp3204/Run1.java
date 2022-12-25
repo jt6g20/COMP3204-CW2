@@ -25,11 +25,11 @@ public class Run1 {
         FImage croppedImage = knn.imageResize(testing.get(0));
         //DisplayUtilities.display(testing.get(0));
         DisplayUtilities.display(croppedImage);
-
+        
         System.out.println("Pixel Diagnostics:");
         showMatrix(croppedImage.pixels);
         System.out.println("________________________________________________");
-        System.out.println(Arrays.toString(croppedImage.getPixelVectorNative(new float[croppedImage.getWidth() * croppedImage.getHeight()])));
+        System.out.println(Arrays.toString(knn.concatImgRowsToVec(croppedImage)));
 
     }
 

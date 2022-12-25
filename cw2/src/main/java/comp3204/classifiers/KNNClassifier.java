@@ -13,4 +13,9 @@ public class KNNClassifier {
         //Resizes this image down to a 16x16 image
         return croppedImage.processInplace(new ResizeProcessor(16,16));
     }
+
+    //Packs all the pixel values into a single vector by concatenating the image rows
+    public float[] concatImgRowsToVec(FImage image){
+        return image.getPixelVectorNative(new float[image.getWidth() * image.getHeight()]);
+    }
 }
