@@ -25,11 +25,13 @@ public class Run1 {
         FImage croppedImage = knn.imageResize(testing.get(0));
         //DisplayUtilities.display(testing.get(0));
         DisplayUtilities.display(croppedImage);
-        
-        System.out.println("Pixel Diagnostics:");
-        showMatrix(croppedImage.pixels);
+        float[] packedImgPixelVec = knn.concatImgRowsToVec(croppedImage);
+
+        //The following 4 lines can be safely deleted once they are no longer needed
+        System.out.println("Image breakdown:");
+        showMatrix(croppedImage.pixels); //Prints 16x16 matrix of the cropped image for diagnosing purposes
         System.out.println("________________________________________________");
-        System.out.println(Arrays.toString(knn.concatImgRowsToVec(croppedImage)));
+        System.out.println(Arrays.toString(packedImgPixelVec)); //Prints out packed img vector
 
     }
 
