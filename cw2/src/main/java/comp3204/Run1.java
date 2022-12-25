@@ -9,6 +9,7 @@ import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 
 import java.net.URISyntaxException;
+import java.util.Arrays;
 
 public class Run1 {
     public static void main( String[] args ) throws FileSystemException, URISyntaxException {
@@ -22,6 +23,20 @@ public class Run1 {
         // Testing knn image cropping
         KNNClassifier knn = new KNNClassifier();
         FImage croppedImage = knn.imageResize(testing.get(0));
+        //DisplayUtilities.display(testing.get(0));
         DisplayUtilities.display(croppedImage);
+
+        System.out.println("Pixel Diagnostics:");
+        showMatrix(croppedImage.pixels);
+        System.out.println("________________________________________________");
+        System.out.println(Arrays.toString(croppedImage.getPixelVectorNative(new float[croppedImage.getWidth() * croppedImage.getHeight()])));
+
     }
+
+    //Prints out a 2D vector in the form of a matrix
+    public static void showMatrix(float[][] mat) {
+        for (float[] row: mat)
+            System.out.println(Arrays.toString(row));
+    }
+
 }
