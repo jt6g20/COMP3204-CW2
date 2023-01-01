@@ -15,13 +15,12 @@ public class Run1 {
     public static void main( String[] args ) throws FileSystemException, URISyntaxException {
         
         GroupedDataset<String, VFSListDataset<FImage>, FImage> training = Data.training();
-        /*System.out.println("Training set size: " + training.size());
+        System.out.println("Training set size: " + training.size());
         System.out.println("Training set classes:" + training.getGroups());
-        System.out.println("Training set 'training' class:" + training.get("training").size());
         System.out.println("______________________________________________________________");
         for (String i: training.getGroups()){
-            System.out.println("Training class name: " + i + training.get(i));
-        }*/
+            System.out.println("Training class name: " + i + " ||||| class info:" + training.get(i));
+        }
 
         /*VFSListDataset<FImage> testing = Data.testing();
         System.out.println("Testing set size: " + testing.size());
