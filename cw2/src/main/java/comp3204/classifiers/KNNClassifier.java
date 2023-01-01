@@ -1,8 +1,12 @@
 package comp3204.classifiers;
 
+import org.openimaj.data.dataset.VFSListDataset;
+import org.openimaj.feature.FeatureExtractor;
 import org.openimaj.feature.FloatFV;
+import org.openimaj.feature.FloatFVComparison;
 import org.openimaj.image.FImage;
 import org.openimaj.image.processing.resize.ResizeProcessor;
+import org.openimaj.ml.annotation.basic.KNNAnnotator;
 
 public class KNNClassifier {
 
@@ -19,14 +23,23 @@ public class KNNClassifier {
         return new FloatFV(image.getPixelVectorNative(new float[image.getWidth() * image.getHeight()]));
     }
 
-    /*public void train(VFSListDataset<FImage> training){
-        // Create a KNN classifier
-        KNNAnnotator<FImage, String, FImage> knn = KNNAnnotator.create(training, 1);
+    //Trains the KNN Annotator
+    public void classify(VFSListDataset<FImage> training){
+        //the k value from kNN
+        int kVal = 3;
+        //Feature extractor implementation to pass on into the KNN Annotator
+        FeatureExtractor<FloatFV, FImage> extractor = new FeatureExtractor<FloatFV, FImage>() {
+            @Override
+            public FloatFV extractFeature(FImage image) {
+                return new FloatFV(image.getPixelVectorNative(new float[image.getWidth() * image.getHeight()]));
+            }
+        };
+        KNNAnnotator knn = KNNAnnotator.create(extractor, FloatFVComparison.EUCLIDEAN,kVal);
 
-        // Classify the test images
+        /*// Classify the test images
         for (FImage image : training) {
             String predictedClass = knn.classify(image).getAnnotations().iterator().next();
             System.out.println(image.getName() + " " + predictedClass);
-        }
-    }*/
+        }*/
+    }
 }
