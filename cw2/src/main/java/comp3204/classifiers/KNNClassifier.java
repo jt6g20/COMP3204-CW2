@@ -1,7 +1,7 @@
 package comp3204.classifiers;
 
 import org.openimaj.data.dataset.GroupedDataset;
-import org.openimaj.data.dataset.VFSListDataset;
+import org.openimaj.data.dataset.ListDataset;
 import org.openimaj.feature.FeatureExtractor;
 import org.openimaj.feature.FloatFV;
 import org.openimaj.feature.FloatFVComparison;
@@ -11,7 +11,7 @@ import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.ml.annotation.basic.KNNAnnotator;
 
 public class KNNClassifier {
-
+    KNNAnnotator knn;
     public static FImage imageResize(FImage image){
         //Crops the image about the centre into a square shape with a 1:1 aspect ratio
         int imageCrop = Math.min(image.width, image.height);
@@ -26,7 +26,7 @@ public class KNNClassifier {
     }
 
     //Trains the KNN Annotator
-    public void classify(GroupedDataset<String, VFSListDataset<FImage>, FImage> training){
+    public void train(GroupedDataset<String, ListDataset<FImage>, FImage> training){
         //the k value from kNN
         int kVal = 1;
         //Feature extractor implementation to pass on into the KNN Annotator
@@ -34,23 +34,46 @@ public class KNNClassifier {
 
             @Override
             public FloatFV extractFeature(FImage image) {
-                return KNNClassifier.concatImgRowsToFV(KNNClassifier.imageResize(image));
+                return (KNNClassifier.concatImgRowsToFV(KNNClassifier.imageResize(image)));
             }
         };
 
-        KNNAnnotator knn = KNNAnnotator.create(extractor, FloatFVComparison.EUCLIDEAN,kVal);
+        knn = KNNAnnotator.create(extractor, FloatFVComparison.EUCLIDEAN,kVal);
         knn.trainMultiClass(training);
-        int counter = 0;
+
+        /*int counter = 0;
         for (FImage i:training){
-            System.out.println("image"+counter+ ": " + knn.classify(i).getPredictedClasses() + "    " + DisplayUtilities.display(i));
+
+            System.out.println("image"+counter+".jpg" + " " + knn.classify((KNNClassifier.imageResize(i))).getPredictedClasses().toString().replace("[", "").replace("]", "") + " ||| " + DisplayUtilities.display(i));
+            counter++;
+            if (counter==5){
+                break;
+            }
+        }*/
+    }
+
+    public void classify(GroupedDataset<String, ListDataset<FImage>, FImage> testing){
+        int counter = 0;
+        for (FImage i:testing){
+
+            System.out.println("image"+counter+".jpg" + " " + knn.classify((KNNClassifier.imageResize(i))).getPredictedClasses().toString().replace("[", "").replace("]", ""));
+            /*System.out.println("image"+counter+".jpg" + " " + knn.classify((KNNClassifier.imageResize(i))).getPredictedClasses().toString().replace("[", "").replace("]", "") + " ||| " + DisplayUtilities.display(i));
+            counter++;
+            if (counter==5){
+                break;
+            }*/
+        }
+    }
+
+    /*public void classify(VFSListDataset<FImage> testing){
+        int counter = 0;
+        for (FImage i:testing){
+            System.out.println("image"+counter+ ": " + knn.classify(i).getPredictedClasses());
             counter++;
         }
+    }*/
 
-
-        /*// Classify the test images
-        for (FImage image : training) {
-            String predictedClass = knn.classify(image).getAnnotations().iterator().next();
-            System.out.println(image.getName() + " " + predictedClass);
-        }*/
+    public KNNAnnotator getKnn() {
+        return knn;
     }
 }
