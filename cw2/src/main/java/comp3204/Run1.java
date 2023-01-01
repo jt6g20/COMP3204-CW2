@@ -15,15 +15,17 @@ public class Run1 {
     public static void main( String[] args ) throws FileSystemException, URISyntaxException {
         
         GroupedDataset<String, VFSListDataset<FImage>, FImage> training = Data.training();
-        System.out.println("Training set size: " + training.size());
+        /*System.out.println("Training set size: " + training.size());
         System.out.println("Training set classes:" + training.getGroups());
         System.out.println("______________________________________________________________");
         for (String i: training.getGroups()){
             System.out.println("Training class name: " + i + " ||||| class info:" + training.get(i));
-        }
+        }*/
 
         KNNClassifier knn = new KNNClassifier();
+        knn.classify(training);
 
+        /*
         //prints all the image classes and their names
         for (String i:training.keySet()){
             for(FImage j: training.get(i)){
@@ -31,7 +33,7 @@ public class Run1 {
                 System.out.println(i + ": " + "size " + j.width + "x" + j.height + DisplayUtilities.display(j));
             }
         }
-
+*/
         /*VFSListDataset<FImage> testing = Data.testing();
         System.out.println("Testing set size: " + testing.size());
 
