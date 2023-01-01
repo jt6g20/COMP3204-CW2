@@ -1,10 +1,8 @@
 package comp3204.classifiers;
 
-import org.openimaj.data.dataset.VFSListDataset;
-import org.openimaj.image.DisplayUtilities;
+import org.openimaj.feature.FloatFV;
 import org.openimaj.image.FImage;
 import org.openimaj.image.processing.resize.ResizeProcessor;
-import org.openimaj.ml.annotation.basic.KNNAnnotator;
 
 public class KNNClassifier {
 
@@ -16,9 +14,9 @@ public class KNNClassifier {
         return croppedImage.processInplace(new ResizeProcessor(16,16));
     }
 
-    //Packs all the pixel values into a single vector by concatenating the image rows
-    public float[] concatImgRowsToVec(FImage image){
-        return image.getPixelVectorNative(new float[image.getWidth() * image.getHeight()]);
+    //Packs all the pixel values into a single vector by concatenating the image rows and returns it as a feature vector
+    public FloatFV concatImgRowsToFV(FImage image){
+        return new FloatFV(image.getPixelVectorNative(new float[image.getWidth() * image.getHeight()]));
     }
 
     /*public void train(VFSListDataset<FImage> training){
