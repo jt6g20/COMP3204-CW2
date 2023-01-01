@@ -1,8 +1,10 @@
 package comp3204.classifiers;
 
+import org.openimaj.data.dataset.VFSListDataset;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.processing.resize.ResizeProcessor;
+import org.openimaj.ml.annotation.basic.KNNAnnotator;
 
 public class KNNClassifier {
 
@@ -18,4 +20,15 @@ public class KNNClassifier {
     public float[] concatImgRowsToVec(FImage image){
         return image.getPixelVectorNative(new float[image.getWidth() * image.getHeight()]);
     }
+
+    /*public void train(VFSListDataset<FImage> training){
+        // Create a KNN classifier
+        KNNAnnotator<FImage, String, FImage> knn = KNNAnnotator.create(training, 1);
+
+        // Classify the test images
+        for (FImage image : training) {
+            String predictedClass = knn.classify(image).getAnnotations().iterator().next();
+            System.out.println(image.getName() + " " + predictedClass);
+        }
+    }*/
 }

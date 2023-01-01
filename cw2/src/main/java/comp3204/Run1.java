@@ -9,16 +9,23 @@ import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 
 import java.net.URISyntaxException;
-import java.util.Arrays;
+import java.util.*;
 
 public class Run1 {
     public static void main( String[] args ) throws FileSystemException, URISyntaxException {
         
         GroupedDataset<String, VFSListDataset<FImage>, FImage> training = Data.training();
-        System.out.println(training.size());
+        /*System.out.println("Training set size: " + training.size());
+        System.out.println("Training set classes:" + training.getGroups());
+        System.out.println("Training set 'training' class:" + training.get("training").size());
+        System.out.println("______________________________________________________________");
+        for (String i: training.getGroups()){
+            System.out.println("Training class name: " + i + training.get(i));
+        }*/
 
-        VFSListDataset<FImage> testing = Data.testing();
-        System.out.println(testing.size());
+        /*VFSListDataset<FImage> testing = Data.testing();
+        System.out.println("Testing set size: " + testing.size());
+
 
         // Testing knn image cropping
         KNNClassifier knn = new KNNClassifier();
@@ -31,7 +38,7 @@ public class Run1 {
         System.out.println("Image breakdown:");
         showMatrix(croppedImage.pixels); //Prints 16x16 matrix of the cropped image for diagnosing purposes
         System.out.println("________________________________________________");
-        System.out.println(Arrays.toString(packedImgPixelVec)); //Prints out packed img vector
+        System.out.println(Arrays.toString(packedImgPixelVec)); //Prints out packed img vector*/
 
     }
 

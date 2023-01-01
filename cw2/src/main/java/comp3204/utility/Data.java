@@ -13,7 +13,15 @@ import java.net.URISyntaxException;
 public class Data {
     public static VFSGroupDataset<FImage> training() throws FileSystemException, URISyntaxException{
         File file = new File(Run1.class.getClassLoader().getResource("comp3204/training.zip").toURI());
+        System.out.println(file);
         String path = file.getAbsolutePath();
+        System.out.println(path);
+
+        VFSGroupDataset onedere = new VFSGroupDataset<>("zip:" + path, ImageUtilities.FIMAGE_READER);
+        System.out.println("KEY SET" + onedere.keySet());
+        System.out.println(onedere.remove(onedere.keySet().toArray()[0]));
+
+        System.out.println(onedere.getGroups());
         return new VFSGroupDataset<>("zip:" + path, ImageUtilities.FIMAGE_READER);
     }
 
