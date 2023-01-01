@@ -22,6 +22,16 @@ public class Run1 {
             System.out.println("Training class name: " + i + " ||||| class info:" + training.get(i));
         }
 
+        KNNClassifier knn = new KNNClassifier();
+
+        //prints all the image classes and their names
+        for (String i:training.keySet()){
+            for(FImage j: training.get(i)){
+                j = knn.imageResize(j);
+                System.out.println(i + ": " + "size " + j.width + "x" + j.height + DisplayUtilities.display(j));
+            }
+        }
+
         /*VFSListDataset<FImage> testing = Data.testing();
         System.out.println("Testing set size: " + testing.size());
 
