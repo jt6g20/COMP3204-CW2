@@ -13,15 +13,12 @@ import java.util.Iterator;
 public class OVAClassifier {
     LiblinearAnnotator ova;
 
-    public float[][] extractPatchVectors(FImage image){
-
-        int patchSize = 8;
-        int increment = 4;
+    public float[][] extractPatchVectors(FImage image, int patchSize, int increment){
 
         ArrayList<float[]> vectors = new ArrayList<>();
 
-        int xIncrements = (int) Math.floor(image.getWidth() / increment);
-        int yIncrements = (int) Math.floor(image.getHeight() / increment);
+        int xIncrements = (int) Math.floor((image.getWidth()-patchSize) / increment);
+        int yIncrements = (int) Math.floor((image.getHeight()-patchSize) / increment);
 
         for (int y = 0; y < yIncrements; y++) {
             for (int x = 0; x < xIncrements; x++) {
@@ -31,6 +28,10 @@ public class OVAClassifier {
         }
 
         return vectors.toArray(new float[vectors.get(0).length][vectors.size()]);
+    }
+
+    public void vectorQuantisation(float[][] vectors) {
+
     }
 
     public void train(GroupedDataset<String, ListDataset<FImage>, FImage> training){
