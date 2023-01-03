@@ -8,7 +8,11 @@ import org.openimaj.data.dataset.GroupedDataset;
 import org.openimaj.data.dataset.ListDataset;
 import org.openimaj.data.dataset.VFSGroupDataset;
 import org.openimaj.data.dataset.VFSListDataset;
+import org.openimaj.experiment.dataset.sampling.GroupedUniformRandomisedSampler;
 import org.openimaj.experiment.dataset.split.GroupedRandomSplitter;
+import org.openimaj.experiment.evaluation.classification.ClassificationEvaluator;
+import org.openimaj.experiment.evaluation.classification.analysers.confusionmatrix.CMAnalyser;
+import org.openimaj.experiment.evaluation.classification.analysers.confusionmatrix.CMResult;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 
@@ -26,14 +30,16 @@ public class Run2 {
 
         GroupedRandomSplitter<String, FImage> splits = new GroupedRandomSplitter<String, FImage>(training, 50, 0, 50);
         GroupedDataset<String, ListDataset<FImage>, FImage> trainingSubset = splits.getTrainingDataset();
-//        GroupedDataset<String, ListDataset<FImage>, FImage> testingSubset = splits.getTestDataset();
-
-//        FImage testImage = training.get("bedroom").get(1);
-//        System.out.println(testImage.width);
-//        System.out.println(testImage.height);
-//        System.out.println(ovaClassifier.extractPatchVectors(testImage).length);
+        GroupedDataset<String, ListDataset<FImage>, FImage> testingSubset = splits.getTestDataset();
 
         ovaClassifier.train(trainingSubset);
-//        ovaClassifier.classify(testingSubset);
+        ovaClassifier.classify(testingSubset);
+
+        System.out.println("Evaluation report");
+        ClassificationEvaluator<CMResult<String>, String, FImage> classificationEvaluator =
+                new ClassificationEvaluator<>(
+                        ovaClassifier.getOVA(), testingSubset, new CMAnalyser<FImage, String>(CMAnalyser.Strategy.SINGLE));
+        System.out.println(classificationEvaluator.analyse(classificationEvaluator.evaluate()).getDetailReport());
+
     }
 }
