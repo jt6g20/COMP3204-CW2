@@ -19,9 +19,16 @@ import java.util.*;
 
 public class Run1 {
     public static void main( String[] args ) throws Exception {
+
       //The real training and testing datasets
         GroupedDataset<String, VFSListDataset<FImage>, FImage> training = Data.training();
         VFSListDataset<FImage> testing = Data.testing();
+
+        //Prints out the names of the files in the test set, but not in the order that we want
+        for (int i=0; i<testing.size(); i++){
+            System.out.println(testing.getID(i));
+        }
+
 
         //Instantiates a new KNNClassifier Object from our KNNClassifier class
         /*KNNClassifier knnClassifier = new KNNClassifier();
