@@ -1,5 +1,6 @@
 package comp3204.classifiers;
 
+import comp3204.utility.HighestConfidence;
 import org.openimaj.data.dataset.GroupedDataset;
 import org.openimaj.data.dataset.ListDataset;
 import org.openimaj.experiment.evaluation.classification.ClassificationResult;
@@ -73,38 +74,6 @@ public class KNNClassifier {
     }
 
     /**
-     * Takes in an FImage to retrieve its classifications' highest confidence class
-     * @param i image to get the highest confidence class of
-     * @return the class with the highest confidence as determined by the kNN Annotator
-     */
-    public String getHighestConfidentClass(FImage i){
-        ClassificationResult result = knn.classify((KNNClassifier.imageResize(i)));
-        //Initialises an empty string and confidence value of 0
-        String classIdentified = "";
-        double confidence = 0;
-
-        //If k in kNN = 1, then the resulting Set of predicted classes will be of size 1, and therefore it returns the class inside the Set
-        if (result.getPredictedClasses().size() == 1){
-            return result.getPredictedClasses().toString().replace("[", "").replace("]", "");
-            //When k > 1, the set has multiple classes identified with different confidence rates, so
-        }else{
-            //We loop through the set
-            for (Object x:result.getPredictedClasses()){
-                //Sets the classIdentified string and confidence double to the first element in the set when they're both untouched
-                if (classIdentified.length() == 0 && confidence==0){
-                    classIdentified = x.toString();
-                    confidence = result.getConfidence(x);
-                    //If any of the classes in the set thereafter have a greater confidence, the local vars are updated
-                }else if (result.getConfidence(x) > confidence){
-                    classIdentified = x.toString();
-                    confidence = result.getConfidence(x);
-                }
-            }
-            return classIdentified;
-        }
-    }
-
-    /**
      * Applied the trained annotator to a set of images and classifies them
      * @param testing test set
      */
@@ -113,7 +82,7 @@ public class KNNClassifier {
         for (FImage i:testing){
             //(uncomment the following line and comment out the one after if you want to view all the classes with their confidence rates for each image)
             //System.out.println("image"+counter+".jpg" + " " + getHighestConfidentClass(i) + " ---- " + getClassConfidence(i));
-            System.out.println("image"+counter+".jpg" + " " + getHighestConfidentClass(i));
+            System.out.println("image"+counter+".jpg" + " " + HighestConfidence.getHighestConfidentClass(knn.classify((KNNClassifier.imageResize(i)))));
             counter++;
         }
     }
