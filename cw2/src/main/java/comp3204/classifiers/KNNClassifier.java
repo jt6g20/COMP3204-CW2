@@ -60,7 +60,7 @@ public class KNNClassifier {
         ClassificationResult result = knn.classify((KNNClassifier.imageResize(i)));
         //Initialises an empty string and confidence value of 0
         String classIdentified = "";
-        double confidence = 7;
+        double confidence = 0;
 
         //If k in kNN = 1, then the resulting Set of predicted classes will be of size 1 and therefore it returns the class inside the Set
         if (result.getPredictedClasses().size() == 1){
