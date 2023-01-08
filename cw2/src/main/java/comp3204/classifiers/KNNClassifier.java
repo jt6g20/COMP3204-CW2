@@ -14,6 +14,12 @@ import java.util.ArrayList;
 
 public class KNNClassifier {
     KNNAnnotator knn;
+
+    /**
+     * Takes in an FImage as the argument, crops it into a square about the centre and resizes it
+     * @param image you want to resize
+     * @return the cropped 16x16px image
+     */
     public static FImage imageResize(FImage image){
         //Crops the image about the centre into a square shape with a 1:1 aspect ratio
         int imageCrop = Math.min(image.width, image.height);
@@ -22,12 +28,20 @@ public class KNNClassifier {
         return croppedImage.processInplace(new ResizeProcessor(16,16));
     }
 
+    /**
+     * Takes in an FImage as the argument, turns its pixel value matrix into a 1D vector
+     * @param image to be turned into a feature vector (FV)
+     * @return feature vector of this 1D image vector
+     */
     //Packs all the pixel values into a single vector by concatenating the image rows and returns it as a feature vector
     public static FloatFV concatImgRowsToFV(FImage image){
         return new FloatFV(image.getPixelVectorNative(new float[image.getWidth() * image.getHeight()]));
     }
 
-    //Trains the KNN Annotator
+    /**
+     * Takes in the training dataset and trains the kNN annotator based on a k-value
+     * @param training dataset
+     */
     public void train(GroupedDataset<String, ListDataset<FImage>, FImage> training){
         //the k value from kNN
         int kVal = 1;
@@ -39,14 +53,17 @@ public class KNNClassifier {
                 return (KNNClassifier.concatImgRowsToFV(KNNClassifier.imageResize(image)));
             }
         };
-
         knn = KNNAnnotator.create(extractor, FloatFVComparison.EUCLIDEAN,kVal);
         knn.trainMultiClass(training);
     }
 
-    //Returns an arraylist of the different classification results along with their confidence level
+    /**
+     * Takes in an FImage in order to be able to make a list of the image's classifications and their confidences
+     * @param i image to get the confidence list of
+     * @return arraylist of the different classification results along with their confidence level
+     */
     public ArrayList getClassConfidence(FImage i){
-        org.openimaj.experiment.evaluation.classification.ClassificationResult result = knn.classify((KNNClassifier.imageResize(i)));
+        ClassificationResult result = knn.classify((KNNClassifier.imageResize(i)));
         ArrayList confidenceList = new ArrayList();
         for (Object x:result.getPredictedClasses()){
             String str = x.toString().concat(": ").concat(String.valueOf(result.getConfidence(x)));
@@ -55,14 +72,18 @@ public class KNNClassifier {
         return confidenceList;
     }
 
-    //Returns the class with the highest confidence as determined by the kNN Annotator
+    /**
+     * Takes in an FImage to retrieve its classifications' highest confidence class
+     * @param i image to get the highest confidence class of
+     * @return the class with the highest confidence as determined by the kNN Annotator
+     */
     public String getHighestConfidentClass(FImage i){
         ClassificationResult result = knn.classify((KNNClassifier.imageResize(i)));
         //Initialises an empty string and confidence value of 0
         String classIdentified = "";
         double confidence = 0;
 
-        //If k in kNN = 1, then the resulting Set of predicted classes will be of size 1 and therefore it returns the class inside the Set
+        //If k in kNN = 1, then the resulting Set of predicted classes will be of size 1, and therefore it returns the class inside the Set
         if (result.getPredictedClasses().size() == 1){
             return result.getPredictedClasses().toString().replace("[", "").replace("]", "");
             //When k > 1, the set has multiple classes identified with different confidence rates, so
@@ -83,7 +104,10 @@ public class KNNClassifier {
         }
     }
 
-    //Applied the trained annotator to a set of images and classifies them
+    /**
+     * Applied the trained annotator to a set of images and classifies them
+     * @param testing test set
+     */
     public void classify(GroupedDataset<String, ListDataset<FImage>, FImage> testing){
         int counter = 0;
         for (FImage i:testing){
