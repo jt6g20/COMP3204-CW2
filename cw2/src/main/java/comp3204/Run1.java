@@ -19,35 +19,36 @@ import java.util.*;
 
 public class Run1 {
     public static void main( String[] args ) throws FileSystemException, URISyntaxException {
-        
+      //The real training and testing datasets
         GroupedDataset<String, VFSListDataset<FImage>, FImage> training = Data.training();
         VFSListDataset<FImage> testing = Data.testing();
-        /*System.out.println("Training set size: " + training.size());
-        System.out.println("Training set classes:" + training.getGroups());
-        System.out.println("______________________________________________________________");
-        for (String i: training.getGroups()){
-            System.out.println("Training class name: " + i + " ||||| class info:" + training.get(i));
-        }*/
 
+        //Instantiates a new KNNClassifier Object from our KNNClassifier class
         /*KNNClassifier knnClassifier = new KNNClassifier();
+        //Passes in the training set so the classifier can annotate all the images with their class labels
         knnClassifier.train(training);
+        //Runs the classifier on the testing set so it uses the existing data points and the kNN algorithm to classify the images
         knnClassifier.classify(testing);*/
 
-        KNNClassifier knnClassifier1 = new KNNClassifier();
-
+      //For testing purposes only in order to find the accuracy
+        KNNClassifier knnClassifier1 = new KNNClassifier(); //New KNNClassifier object
+      //Training dataset split into two new smaller equally sized randomly selected subsets: a new training set and a new testing set (used for validation)
         GroupedRandomSplitter<String, FImage> splits = new GroupedRandomSplitter<String, FImage>(training, 50, 0, 50);
         GroupedDataset<String, ListDataset<FImage>, FImage> trainingSubset = splits.getTrainingDataset();
         GroupedDataset<String, ListDataset<FImage>, FImage> testingSubset = splits.getTestDataset();
 
+        //Trains the dataset on this
         knnClassifier1.train(trainingSubset);
         knnClassifier1.classify(testingSubset);
 
+        //Uses the OpenIMAJ ClassificationEvaluator class to calculate the classification accuracies
         System.out.println("Evaluation report");
         ClassificationEvaluator<CMResult<String>, String, FImage> classificationEvaluator =
             new ClassificationEvaluator<CMResult<String>, String, FImage>(
                 knnClassifier1.getKnn(), testingSubset, new CMAnalyser<FImage, String>(CMAnalyser.Strategy.SINGLE));
         System.out.println(classificationEvaluator.analyse(classificationEvaluator.evaluate()).getDetailReport());
 
+        //The following blocks of code were used for testing purposes only, and left in here in case they need to be used again to test
         //prints all the image classes and their names
         /*int counter = 0;
         for (Object i:trainingSubset.getGroups()){
