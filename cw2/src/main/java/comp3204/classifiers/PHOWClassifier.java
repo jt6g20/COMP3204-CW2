@@ -1,10 +1,12 @@
 package comp3204.classifiers;
 
+import comp3204.utility.HighestConfidence;
 import de.bwaldvogel.liblinear.SolverType;
 import org.openimaj.data.DataSource;
 import org.openimaj.data.dataset.GroupedDataset;
 import org.openimaj.data.dataset.ListDataset;
 import org.openimaj.experiment.dataset.sampling.GroupedUniformRandomisedSampler;
+import org.openimaj.experiment.evaluation.classification.ClassificationResult;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureExtractor;
 import org.openimaj.feature.SparseIntFV;
@@ -22,6 +24,8 @@ import org.openimaj.ml.clustering.assignment.HardAssigner;
 import org.openimaj.ml.clustering.kmeans.ByteKMeans;
 import org.openimaj.util.pair.IntFloatPair;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.util.*;
 
 public class PHOWClassifier {
@@ -76,12 +80,15 @@ public class PHOWClassifier {
      * Applied the trained annotator to a set of images and classifies them
      * @param testing dataset
      */
-    public void classify(GroupedDataset<String, ListDataset<FImage>, FImage> testing) {
+    public void classify(GroupedDataset<String, ListDataset<FImage>, FImage> testing, String fileName) throws Exception {
         int count = 0;
+        BufferedWriter writer = new BufferedWriter(new FileWriter(fileName.concat(".txt")));
         for (FImage i: testing) {
-            System.out.println(count + ".jpg" + " " + ann.classify(i).getPredictedClasses().toString().replace("[", "").replace("]", ""));
+            writer.write("image"+count+".jpg" + " " + HighestConfidence.getHighestConfidenceClass(ann.classify(i)));
             count++;
+            writer.newLine();
         }
+        writer.close();
     }
 
     /**
@@ -95,15 +102,12 @@ public class PHOWClassifier {
         List<LocalFeatureList<ByteDSIFTKeypoint>> allkeys = new ArrayList<>();
 
         // Iterates through the training
-        int count = 0;
         for (FImage rec : training) {
-            System.out.println("Count " + count);
             FImage img = rec.getImage();
 
             // Analyses each image and extracts DSIFT descriptors
             pdsift.analyseImage(img);
             allkeys.add(pdsift.getByteKeypoints(0.005f));
-            count++;
         }
 
         // Takes the first 10000 features and clusters them into 300 classes
