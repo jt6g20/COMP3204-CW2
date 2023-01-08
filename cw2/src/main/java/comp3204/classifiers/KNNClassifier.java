@@ -11,6 +11,9 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.ml.annotation.basic.KNNAnnotator;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class KNNClassifier {
@@ -77,14 +80,17 @@ public class KNNClassifier {
      * Applied the trained annotator to a set of images and classifies them
      * @param testing test set
      */
-    public void classify(GroupedDataset<String, ListDataset<FImage>, FImage> testing){
+    public void classify(GroupedDataset<String, ListDataset<FImage>, FImage> testing, String fileName) throws Exception{
         int counter = 0;
+        BufferedWriter writer = new BufferedWriter(new FileWriter(fileName.concat(".txt")));
         for (FImage i:testing){
             //(uncomment the following line and comment out the one after if you want to view all the classes with their confidence rates for each image)
             //System.out.println("image"+counter+".jpg" + " " + getHighestConfidentClass(i) + " ---- " + getClassConfidence(i));
-            System.out.println("image"+counter+".jpg" + " " + HighestConfidence.getHighestConfidenceClass(knn.classify((KNNClassifier.imageResize(i)))));
+            writer.write("image"+counter+".jpg" + " " + HighestConfidence.getHighestConfidenceClass(knn.classify((KNNClassifier.imageResize(i)))));
             counter++;
+            writer.newLine();
         }
+        writer.close();
     }
     public KNNAnnotator getKnn() {
         return knn;

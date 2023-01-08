@@ -18,7 +18,7 @@ import java.net.URISyntaxException;
 import java.util.*;
 
 public class Run1 {
-    public static void main( String[] args ) throws FileSystemException, URISyntaxException {
+    public static void main( String[] args ) throws Exception {
       //The real training and testing datasets
         GroupedDataset<String, VFSListDataset<FImage>, FImage> training = Data.training();
         VFSListDataset<FImage> testing = Data.testing();
@@ -39,7 +39,7 @@ public class Run1 {
 
         //Trains the dataset on this
         knnClassifier1.train(trainingSubset);
-        knnClassifier1.classify(testingSubset);
+        knnClassifier1.classify(testingSubset, "Run1");
 
         //Uses the OpenIMAJ ClassificationEvaluator class to calculate the classification accuracies
         System.out.println("____________________\nEvaluation report");
