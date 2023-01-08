@@ -24,13 +24,23 @@ public class Run3 {
         GroupedDataset<String, ListDataset<FImage>, FImage> trainingSubset = splits.getTrainingDataset();
         GroupedDataset<String, ListDataset<FImage>, FImage> testingSubset = splits.getTestDataset();
 
+        long trainStart = System.currentTimeMillis();
         phow.train(trainingSubset);
-        phow.classify(testingSubset, "Run3");
+        long trainEnd = System.currentTimeMillis();
+        System.out.println("Training time: " + (trainEnd - trainStart));
 
+        long classifyStart = System.currentTimeMillis();
+        phow.classify(testingSubset, "Run3");
+        long classifyEnd = System.currentTimeMillis();
+        System.out.println("Classify time: " + (classifyEnd - classifyStart));
+
+        long evaluateStart = System.currentTimeMillis();
         System.out.println("____________________\nEvaluation report");
         ClassificationEvaluator<CMResult<String>, String, FImage> classificationEvaluator =
                 new ClassificationEvaluator<CMResult<String>, String, FImage>(
                         phow.getAnn(), testingSubset, new CMAnalyser<FImage, String>(CMAnalyser.Strategy.SINGLE));
         System.out.println(classificationEvaluator.analyse(classificationEvaluator.evaluate()));
+        long evaluateEnd = System.currentTimeMillis();
+        System.out.println("Evaluate time: " + (evaluateEnd - evaluateStart));
     }
 }

@@ -22,6 +22,7 @@ import org.openimaj.ml.annotation.linear.LiblinearAnnotator;
 import org.openimaj.ml.clustering.ByteCentroidsResult;
 import org.openimaj.ml.clustering.assignment.HardAssigner;
 import org.openimaj.ml.clustering.kmeans.ByteKMeans;
+import org.openimaj.ml.kernel.HomogeneousKernelMap;
 import org.openimaj.util.pair.IntFloatPair;
 
 import java.io.BufferedWriter;
@@ -47,7 +48,7 @@ public class PHOWClassifier {
                 getAssigner(GroupedUniformRandomisedSampler.sample(training, 30), pdsift);
 
         // Takes in the Pyramid DenseSIFT to construct a PHOW extractor
-        FeatureExtractor<DoubleFV, FImage> extractor = new FeatureExtractor<DoubleFV, FImage>() {
+        FeatureExtractor<DoubleFV, FImage> phowExtractor = new FeatureExtractor<DoubleFV, FImage>() {
             /**
              * Extracts DenseSIFT features from an image
              * @param object the FImage to extract from
@@ -70,10 +71,14 @@ public class PHOWClassifier {
             }
         };
 
+        HomogeneousKernelMap kernelMap = new HomogeneousKernelMap(HomogeneousKernelMap.KernelType.Chi2, HomogeneousKernelMap.WindowType.Rectangular);
+        FeatureExtractor<DoubleFV, FImage> featureExtractor = kernelMap.createWrappedExtractor(phowExtractor);
+
         // Instantiates a Linear classifier and trains it using our PHOW extractor
-        ann = new LiblinearAnnotator<>(extractor, LiblinearAnnotator.Mode.MULTICLASS,
+        ann = new LiblinearAnnotator<>(featureExtractor, LiblinearAnnotator.Mode.MULTICLASS,
                 SolverType.L2R_L2LOSS_SVC, 1.0, 0.00001);
         ann.train(training);
+
     }
 
     /**
