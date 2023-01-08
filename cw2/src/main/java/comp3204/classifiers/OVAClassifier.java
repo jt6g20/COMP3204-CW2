@@ -1,11 +1,12 @@
 
 package comp3204.classifiers;
 
+import comp3204.utility.HighestConfidence;
 import de.bwaldvogel.liblinear.SolverType;
 import org.openimaj.data.dataset.GroupedDataset;
 import org.openimaj.data.dataset.ListDataset;
 import org.openimaj.experiment.dataset.sampling.GroupedUniformRandomisedSampler;
-import org.openimaj.experiment.dataset.sampling.StratifiedGroupedUniformRandomisedSampler;
+import org.openimaj.experiment.evaluation.classification.ClassificationResult;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureExtractor;
 import org.openimaj.feature.FloatFV;
@@ -18,13 +19,19 @@ import org.openimaj.ml.clustering.kmeans.FloatKMeans;
 import org.openimaj.util.pair.IntFloatPair;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 public class OVAClassifier {
     LiblinearAnnotator<FImage, String> classifier;
 
+    /**
+     * Extracts feature vectors from fixed size densely-sampled pixel patches
+     * @param image image to extract features from
+     * @param patchSize dimensions of the patches
+     * @param increment number of pixels to move patch by for each feature vector
+     * @return a list of feature vectors
+     */
     public List<FloatFV> extractPatchVectors(FImage image, int patchSize, int increment){
 
         ArrayList<FloatFV> vectors = new ArrayList<>();
@@ -43,6 +50,12 @@ public class OVAClassifier {
         return vectors;
     }
 
+    /**
+     * Constructs a HardAssigner trained on the dataset to perform K-means clustering on feature vectors
+     * @param sample a dataset of images to use for training the HardAssigner
+     * @param clusters the number of clusters to assign vectors into
+     * @return a HardAssigner class
+     */
     public HardAssigner<float[], float[], IntFloatPair> trainQuantiser(GroupedDataset<String, ListDataset<FImage>, FImage> sample, int clusters){
         List<FloatFV> vectors = new ArrayList<>();
 
@@ -69,6 +82,9 @@ public class OVAClassifier {
         return result.defaultHardAssigner();
     }
 
+    /**
+     * A custom feature extractor class which uses bag of words
+     */
     class Extractor implements FeatureExtractor<DoubleFV, FImage> {
 
         HardAssigner<float[], float[], IntFloatPair> assigner;
@@ -86,6 +102,10 @@ public class OVAClassifier {
         }
     }
 
+    /**
+     * Trains the classifier on a set of images
+     * @param training images to train the classifier on
+     */
     public void train(GroupedDataset<String, ListDataset<FImage>, FImage> training){
 
         //train a quantiser using a random sample of n images from the training dataset
@@ -99,19 +119,32 @@ public class OVAClassifier {
 
         System.out.println("training...");
 //        stratified sampling used to speed up for development
-//        classifier.train(new StratifiedGroupedUniformRandomisedSampler(10).sample(training));
+//        classifier.train(new StratifiedGroupedUniformRandomisedSampler(2).sample(training));
         classifier.train(training);
         System.out.println("training complete");
     }
 
+    /**
+     * Applies the trained annotator to a set of images and classifies them
+     * @param testing dataset of images to classify
+     */
     public void classify(GroupedDataset<String, ListDataset<FImage>, FImage> testing){
+        int count = 0;
         for (String category : testing.keySet()) {
             System.out.println(category + " ----------------------------------------------");
             for (FImage i : testing.get(category)) {
-                System.out.println(classifier.classify(i).getPredictedClasses());
+                ClassificationResult result = classifier.classify(i);
+                System.out.println(count + ".jpg " + HighestConfidence.getHighestConfidenceClass(result));
+                count++;
             }
         }
     }
+
+    /**
+     * Converts a list of feature vectors to a 2D array
+     * @param list list of feature vectors
+     * @return 2D array
+     */
     public float[][] vectorListToArray(List<FloatFV> list) {
         int vectorSize = list.get(0).length();
 

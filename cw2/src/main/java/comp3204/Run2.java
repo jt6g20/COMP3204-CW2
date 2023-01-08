@@ -23,12 +23,9 @@ public class Run2 {
     public static void main( String[] args ) throws FileSystemException, URISyntaxException {
         GroupedDataset<String, VFSListDataset<FImage>, FImage> training = Data.training();
 
-        System.out.println("Training set size: " + training.size());
-        System.out.println("Training set classes:" + training.getGroups());
-
         OVAClassifier ovaClassifier = new OVAClassifier();
 
-        GroupedRandomSplitter<String, FImage> splits = new GroupedRandomSplitter<String, FImage>(training, 50, 0, 50);
+        GroupedRandomSplitter<String, FImage> splits = new GroupedRandomSplitter<>(training, 50, 0, 50);
         GroupedDataset<String, ListDataset<FImage>, FImage> trainingSubset = splits.getTrainingDataset();
         GroupedDataset<String, ListDataset<FImage>, FImage> testingSubset = splits.getTestDataset();
 
@@ -40,6 +37,5 @@ public class Run2 {
                 new ClassificationEvaluator<>(
                         ovaClassifier.getOVA(), testingSubset, new CMAnalyser<FImage, String>(CMAnalyser.Strategy.SINGLE));
         System.out.println(classificationEvaluator.analyse(classificationEvaluator.evaluate()).getDetailReport());
-
     }
 }
