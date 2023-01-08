@@ -6,7 +6,6 @@ import de.bwaldvogel.liblinear.SolverType;
 import org.openimaj.data.dataset.GroupedDataset;
 import org.openimaj.data.dataset.ListDataset;
 import org.openimaj.experiment.dataset.sampling.GroupedUniformRandomisedSampler;
-import org.openimaj.experiment.dataset.sampling.StratifiedGroupedUniformRandomisedSampler;
 import org.openimaj.experiment.evaluation.classification.ClassificationResult;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureExtractor;
@@ -111,7 +110,7 @@ public class OVAClassifier {
             System.out.println(category + " ----------------------------------------------");
             for (FImage i : testing.get(category)) {
                 ClassificationResult result = classifier.classify(i);
-                System.out.println(count + ".jpg " + HighestConfidence.getHighestConfidentClass(result));
+                System.out.println(count + ".jpg " + HighestConfidence.getHighestConfidenceClass(result));
                 count++;
             }
         }

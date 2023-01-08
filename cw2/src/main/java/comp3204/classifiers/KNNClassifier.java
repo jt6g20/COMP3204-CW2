@@ -82,7 +82,7 @@ public class KNNClassifier {
         for (FImage i:testing){
             //(uncomment the following line and comment out the one after if you want to view all the classes with their confidence rates for each image)
             //System.out.println("image"+counter+".jpg" + " " + getHighestConfidentClass(i) + " ---- " + getClassConfidence(i));
-            System.out.println("image"+counter+".jpg" + " " + HighestConfidence.getHighestConfidentClass(knn.classify((KNNClassifier.imageResize(i)))));
+            System.out.println("image"+counter+".jpg" + " " + HighestConfidence.getHighestConfidenceClass(knn.classify((KNNClassifier.imageResize(i)))));
             counter++;
         }
     }

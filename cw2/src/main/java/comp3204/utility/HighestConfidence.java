@@ -10,7 +10,7 @@ public class HighestConfidence {
      * @param result the result of a classification, containing predicted classes and confidence levels
      * @return the class with the highest confidence as determined by the kNN Annotator
      */
-    public static String getHighestConfidentClass(ClassificationResult result){
+    public static String getHighestConfidenceClass(ClassificationResult result){
         //Initialises an empty string and confidence value of 0
         String classIdentified = "";
         double highestConfidence = 0;
