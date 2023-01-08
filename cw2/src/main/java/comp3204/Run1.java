@@ -25,22 +25,22 @@ public class Run1 {
         VFSListDataset<FImage> testing = Data.testing();
 
         //Prints out the names of the files in the test set, but not in the order that we want
-        for (int i=0; i<testing.size(); i++){
+        /*for (int i=0; i<testing.size(); i++){
             System.out.println(testing.getID(i));
-        }
+        }*/
 
 
         //Instantiates a new KNNClassifier Object from our KNNClassifier class
-        /*KNNClassifier knnClassifier = new KNNClassifier();
+        KNNClassifier knnClassifier = new KNNClassifier();
         //Passes in the training set so the classifier can annotate all the images with their class labels
         knnClassifier.train(training);
         //Runs the classifier on the testing set so it uses the existing data points and the kNN algorithm to classify the images
-        knnClassifier.classify(testing);*/
+        knnClassifier.classify(testing, "Run1");
 
       //For testing purposes only in order to find the accuracy
-        KNNClassifier knnClassifier1 = new KNNClassifier(); //New KNNClassifier object
+        //KNNClassifier knnClassifier1 = new KNNClassifier(); //New KNNClassifier object
       //Training dataset split into two new smaller equally sized randomly selected subsets: a new training set and a new testing set (used for validation)
-        GroupedRandomSplitter<String, FImage> splits = new GroupedRandomSplitter<String, FImage>(training, 50, 0, 50);
+        /*GroupedRandomSplitter<String, FImage> splits = new GroupedRandomSplitter<String, FImage>(training, 50, 0, 50);
         GroupedDataset<String, ListDataset<FImage>, FImage> trainingSubset = splits.getTrainingDataset();
         GroupedDataset<String, ListDataset<FImage>, FImage> testingSubset = splits.getTestDataset();
 
@@ -53,7 +53,7 @@ public class Run1 {
         ClassificationEvaluator<CMResult<String>, String, FImage> classificationEvaluator =
             new ClassificationEvaluator<CMResult<String>, String, FImage>(
                 knnClassifier1.getKnn(), testingSubset, new CMAnalyser<FImage, String>(CMAnalyser.Strategy.SINGLE));
-        System.out.println(classificationEvaluator.analyse(classificationEvaluator.evaluate()));
+        System.out.println(classificationEvaluator.analyse(classificationEvaluator.evaluate()));*/
 
         //The following blocks of code were used for testing purposes only, and left in here in case they need to be used again to test
         //prints all the image classes and their names
