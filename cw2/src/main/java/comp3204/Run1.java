@@ -42,11 +42,11 @@ public class Run1 {
         knnClassifier1.classify(testingSubset);
 
         //Uses the OpenIMAJ ClassificationEvaluator class to calculate the classification accuracies
-        System.out.println("Evaluation report");
+        System.out.println("____________________\nEvaluation report");
         ClassificationEvaluator<CMResult<String>, String, FImage> classificationEvaluator =
             new ClassificationEvaluator<CMResult<String>, String, FImage>(
                 knnClassifier1.getKnn(), testingSubset, new CMAnalyser<FImage, String>(CMAnalyser.Strategy.SINGLE));
-        System.out.println(classificationEvaluator.analyse(classificationEvaluator.evaluate()).getDetailReport());
+        System.out.println(classificationEvaluator.analyse(classificationEvaluator.evaluate()));
 
         //The following blocks of code were used for testing purposes only, and left in here in case they need to be used again to test
         //prints all the image classes and their names
