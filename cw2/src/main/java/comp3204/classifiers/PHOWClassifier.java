@@ -5,6 +5,7 @@ import de.bwaldvogel.liblinear.SolverType;
 import org.openimaj.data.DataSource;
 import org.openimaj.data.dataset.GroupedDataset;
 import org.openimaj.data.dataset.ListDataset;
+import org.openimaj.data.dataset.VFSListDataset;
 import org.openimaj.experiment.dataset.sampling.GroupedUniformRandomisedSampler;
 import org.openimaj.experiment.evaluation.classification.ClassificationResult;
 import org.openimaj.feature.DoubleFV;
@@ -31,13 +32,13 @@ import java.util.*;
 
 public class PHOWClassifier {
 
-    LiblinearAnnotator<FImage, String> ann;
+    LiblinearAnnotator<FImage, String> classifier;
 
     /**
      * Trains a linear classifier by extracting DenseSIFT features using a PHOW technique
      * @param training The training dataset
      */
-    public void train(GroupedDataset<String, ListDataset<FImage>, FImage> training){
+    public void train(GroupedDataset<String, VFSListDataset<FImage>, FImage> training){
         // Constructs DenseSIFT extractor object, with a step size of 5 px window size of 7 px
         DenseSIFT dsift = new DenseSIFT(5, 7);
         // Constructs a Pyramid DenseSIFT extractor using the object above, with a magnification factor of 6 (controls smoothing)
@@ -71,13 +72,14 @@ public class PHOWClassifier {
             }
         };
 
+        // Wraps phowExtractor in a HomogeneousKernelMap
         HomogeneousKernelMap kernelMap = new HomogeneousKernelMap(HomogeneousKernelMap.KernelType.Chi2, HomogeneousKernelMap.WindowType.Rectangular);
         FeatureExtractor<DoubleFV, FImage> featureExtractor = kernelMap.createWrappedExtractor(phowExtractor);
 
-        // Instantiates a Linear classifier and trains it using our PHOW extractor
-        ann = new LiblinearAnnotator<>(featureExtractor, LiblinearAnnotator.Mode.MULTICLASS,
+        // Instantiates a Linear classifier and trains it using our extractor
+        classifier = new LiblinearAnnotator<>(featureExtractor, LiblinearAnnotator.Mode.MULTICLASS,
                 SolverType.L2R_L2LOSS_SVC, 1.0, 0.00001);
-        ann.train(training);
+        classifier.train(training);
 
     }
 
@@ -85,12 +87,32 @@ public class PHOWClassifier {
      * Applied the trained annotator to a set of images and classifies them
      * @param testing dataset
      */
-    public void classify(GroupedDataset<String, ListDataset<FImage>, FImage> testing, String fileName) throws Exception {
-        int count = 0;
-        BufferedWriter writer = new BufferedWriter(new FileWriter(fileName.concat(".txt")));
-        for (FImage i: testing) {
-            writer.write("image"+count+".jpg" + " " + HighestConfidence.getHighestConfidenceClass(ann.classify(i)));
-            count++;
+    public void classify(VFSListDataset<FImage> testing) throws Exception {
+        int counter = 0;
+        ArrayList<String> results = new ArrayList<>();
+        BufferedWriter writer = new BufferedWriter(new FileWriter("Run3.txt"));
+        for (FImage i:testing) {
+            //(uncomment the following line and comment out the one after if you want to view all the classes with their confidence rates for each image)
+            //System.out.println("image"+counter+".jpg" + " " + getHighestConfidentClass(i) + " ---- " + getClassConfidence(i));
+            ClassificationResult result = classifier.classify(i);
+            results.add(testing.getID(counter).split("/")[1] + " " + HighestConfidence.getHighestConfidenceClass(result));
+            counter++;
+        }
+        //The results are not in ascending order of image name, so these are sorted along with their classifications into the correct order
+        Collections.sort(results, new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                int comparingInt = Integer.compare(Integer.parseInt(o1.split(" ")[0].split("\\.")[0]), Integer.parseInt(o2.split(" ")[0].split("\\.")[0]));
+                if (comparingInt != 0) {
+                    return comparingInt;
+                }
+                return o1.compareTo(o2);
+            }
+        });
+
+        //The sorted answers are now saved to the text file
+        for (String x:results){
+            writer.write(x);
             writer.newLine();
         }
         writer.close();
@@ -126,7 +148,7 @@ public class PHOWClassifier {
         return result.defaultHardAssigner();
     }
 
-    public LiblinearAnnotator<FImage, String> getAnn() {
-        return ann;
+    public LiblinearAnnotator<FImage, String> getClassifier() {
+        return classifier;
     }
 }

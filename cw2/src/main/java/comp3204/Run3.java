@@ -11,6 +11,8 @@ import org.openimaj.experiment.evaluation.classification.analysers.confusionmatr
 import org.openimaj.experiment.evaluation.classification.analysers.confusionmatrix.CMResult;
 import org.openimaj.image.FImage;
 
+import java.util.concurrent.TimeUnit;
+
 public class Run3 {
     public static void main( String[] args ) throws Exception{
 
@@ -25,22 +27,28 @@ public class Run3 {
         GroupedDataset<String, ListDataset<FImage>, FImage> testingSubset = splits.getTestDataset();
 
         long trainStart = System.currentTimeMillis();
-        phow.train(trainingSubset);
+        phow.train(training);
         long trainEnd = System.currentTimeMillis();
-        System.out.println("Training time: " + (trainEnd - trainStart));
+        System.out.println("Training time: " + msToMinSec(trainEnd - trainStart));
 
         long classifyStart = System.currentTimeMillis();
-        phow.classify(testingSubset, "Run3");
+        phow.classify(testing);
         long classifyEnd = System.currentTimeMillis();
-        System.out.println("Classify time: " + (classifyEnd - classifyStart));
+        System.out.println("Classify time: " + msToMinSec(classifyEnd - classifyStart));
 
-        long evaluateStart = System.currentTimeMillis();
-        System.out.println("____________________\nEvaluation report");
-        ClassificationEvaluator<CMResult<String>, String, FImage> classificationEvaluator =
-                new ClassificationEvaluator<CMResult<String>, String, FImage>(
-                        phow.getAnn(), testingSubset, new CMAnalyser<FImage, String>(CMAnalyser.Strategy.SINGLE));
-        System.out.println(classificationEvaluator.analyse(classificationEvaluator.evaluate()));
-        long evaluateEnd = System.currentTimeMillis();
-        System.out.println("Evaluate time: " + (evaluateEnd - evaluateStart));
+//        long evaluateStart = System.currentTimeMillis();
+//        System.out.println("____________________\nEvaluation report");
+//        ClassificationEvaluator<CMResult<String>, String, FImage> classificationEvaluator =
+//                new ClassificationEvaluator<CMResult<String>, String, FImage>(
+//                        phow.getAnn(), testingSubset, new CMAnalyser<FImage, String>(CMAnalyser.Strategy.SINGLE));
+//        System.out.println(classificationEvaluator.analyse(classificationEvaluator.evaluate()));
+//        long evaluateEnd = System.currentTimeMillis();
+//        System.out.println("Evaluate time: " + msToMinSec(evaluateEnd - evaluateStart));
+    }
+
+    public static String msToMinSec(long ms){
+        long min = (ms / 1000) / 60;
+        int sec = (int)(ms / 1000) % 60;
+        return min + ":" + sec;
     }
 }
