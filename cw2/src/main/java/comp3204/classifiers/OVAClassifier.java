@@ -5,7 +5,9 @@ import comp3204.utility.HighestConfidence;
 import de.bwaldvogel.liblinear.SolverType;
 import org.openimaj.data.dataset.GroupedDataset;
 import org.openimaj.data.dataset.ListDataset;
+import org.openimaj.data.dataset.VFSListDataset;
 import org.openimaj.experiment.dataset.sampling.GroupedUniformRandomisedSampler;
+import org.openimaj.experiment.dataset.sampling.StratifiedGroupedUniformRandomisedSampler;
 import org.openimaj.experiment.evaluation.classification.ClassificationResult;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureExtractor;
@@ -18,8 +20,12 @@ import org.openimaj.ml.clustering.assignment.HardAssigner;
 import org.openimaj.ml.clustering.kmeans.FloatKMeans;
 import org.openimaj.util.pair.IntFloatPair;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class OVAClassifier {
@@ -56,7 +62,7 @@ public class OVAClassifier {
      * @param clusters the number of clusters to assign vectors into
      * @return a HardAssigner class
      */
-    public HardAssigner<float[], float[], IntFloatPair> trainQuantiser(GroupedDataset<String, ListDataset<FImage>, FImage> sample, int clusters){
+    public HardAssigner<float[], float[], IntFloatPair> trainQuantiser(GroupedDataset<String, VFSListDataset<FImage>, FImage> sample, int clusters){
         List<FloatFV> vectors = new ArrayList<>();
 
         //collect feature vectors from images
@@ -106,11 +112,10 @@ public class OVAClassifier {
      * Trains the classifier on a set of images
      * @param training images to train the classifier on
      */
-    public void train(GroupedDataset<String, ListDataset<FImage>, FImage> training){
+    public void train(GroupedDataset<String, VFSListDataset<FImage>, FImage> training){
 
         //train a quantiser using a random sample of n images from the training dataset
-        HardAssigner<float[], float[], IntFloatPair> assigner = trainQuantiser(
-                GroupedUniformRandomisedSampler.sample(training, 30), 500);
+        HardAssigner<float[], float[], IntFloatPair> assigner = trainQuantiser(training, 500);
 
         FeatureExtractor<DoubleFV, FImage> extractor = new Extractor(assigner);
 
@@ -128,7 +133,7 @@ public class OVAClassifier {
      * Applies the trained annotator to a set of images and classifies them
      * @param testing dataset of images to classify
      */
-    public void classify(GroupedDataset<String, ListDataset<FImage>, FImage> testing){
+    public void classifyOnTrainingData(GroupedDataset<String, ListDataset<FImage>, FImage> testing){
         int count = 0;
         for (String category : testing.keySet()) {
             System.out.println(category + " ----------------------------------------------");
@@ -138,6 +143,41 @@ public class OVAClassifier {
                 count++;
             }
         }
+    }
+
+    /**
+     * Applies the trained annotator to a set of images and classifies them
+     * @param testing dataset of images to classify
+     */
+    public void classify(VFSListDataset<FImage> testing) throws IOException {
+        int counter = 0;
+        ArrayList<String> results = new ArrayList<>();
+        BufferedWriter writer = new BufferedWriter(new FileWriter("Run2.txt"));
+        for (FImage i:testing){
+            //(uncomment the following line and comment out the one after if you want to view all the classes with their confidence rates for each image)
+            //System.out.println("image"+counter+".jpg" + " " + getHighestConfidentClass(i) + " ---- " + getClassConfidence(i));
+            ClassificationResult result = classifier.classify(i);
+            results.add(testing.getID(counter).split("/")[1] + " " + HighestConfidence.getHighestConfidenceClass(result));
+            counter++;
+        }
+        //The results are not in ascending order of image name, so these are sorted along with their classifications into the correct order
+        Collections.sort(results, new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                int comparingInt = Integer.compare(Integer.parseInt(o1.split(" ")[0].split("\\.")[0]), Integer.parseInt(o2.split(" ")[0].split("\\.")[0]));
+                if (comparingInt != 0) {
+                    return comparingInt;
+                }
+                return o1.compareTo(o2);
+            }
+        });
+
+        //The sorted answers are now saved to the text file
+        for (String x:results){
+            writer.write(x);
+            writer.newLine();
+        }
+        writer.close();
     }
 
     /**

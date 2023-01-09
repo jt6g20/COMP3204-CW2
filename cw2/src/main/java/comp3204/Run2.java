@@ -17,11 +17,13 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URISyntaxException;
 
 public class Run2 {
-    public static void main( String[] args ) throws FileSystemException, URISyntaxException {
+    public static void main( String[] args ) throws IOException, URISyntaxException {
         GroupedDataset<String, VFSListDataset<FImage>, FImage> training = Data.training();
+        VFSListDataset<FImage> testing = Data.testing();
 
         OVAClassifier ovaClassifier = new OVAClassifier();
 
@@ -29,13 +31,15 @@ public class Run2 {
         GroupedDataset<String, ListDataset<FImage>, FImage> trainingSubset = splits.getTrainingDataset();
         GroupedDataset<String, ListDataset<FImage>, FImage> testingSubset = splits.getTestDataset();
 
-        ovaClassifier.train(trainingSubset);
-        ovaClassifier.classify(testingSubset);
+//        ovaClassifier.train(trainingSubset);
+//        ovaClassifier.classifyOnTrainingData(testingSubset);
+        ovaClassifier.train(training);
+        ovaClassifier.classify(testing);
 
-        System.out.println("Evaluation report");
-        ClassificationEvaluator<CMResult<String>, String, FImage> classificationEvaluator =
-                new ClassificationEvaluator<>(
-                        ovaClassifier.getOVA(), testingSubset, new CMAnalyser<FImage, String>(CMAnalyser.Strategy.SINGLE));
-        System.out.println(classificationEvaluator.analyse(classificationEvaluator.evaluate()).getDetailReport());
+//        System.out.println("Evaluation report");
+//        ClassificationEvaluator<CMResult<String>, String, FImage> classificationEvaluator =
+//                new ClassificationEvaluator<>(
+//                        ovaClassifier.getOVA(), testingSubset, new CMAnalyser<FImage, String>(CMAnalyser.Strategy.SINGLE));
+//        System.out.println(classificationEvaluator.analyse(classificationEvaluator.evaluate()));
     }
 }
