@@ -48,8 +48,8 @@ public class KNNClassifier {
      * @param training dataset
      */
     public void train(GroupedDataset<String, VFSListDataset<FImage>, FImage> training){
-        //the k value from kNN
-        int kVal = 1;
+        //the k value from kNN: optimal value of 11
+        int kVal = 11;
         //Feature extractor implementation to pass on into the KNN Annotator
         FeatureExtractor<FloatFV, FImage> extractor = new FeatureExtractor<FloatFV, FImage>() {
 
