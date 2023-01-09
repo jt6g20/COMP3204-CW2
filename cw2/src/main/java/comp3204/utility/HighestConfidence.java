@@ -8,7 +8,7 @@ public class HighestConfidence {
     /**
      * Takes in an FImage to retrieve its classifications' highest confidence class
      * @param result the result of a classification, containing predicted classes and confidence levels
-     * @return the class with the highest confidence as determined by the kNN Annotator
+     * @return the class with the highest confidence as determined by the classifier(s)
      */
     public static String getHighestConfidenceClass(ClassificationResult result){
         //Initialises an empty string and confidence value of 0
