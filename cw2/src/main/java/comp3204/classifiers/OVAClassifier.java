@@ -130,7 +130,7 @@ public class OVAClassifier {
     }
 
     /**
-     * Applies the trained annotator to a set of images and classifies them
+     * Applies the trained annotator to a set of labelled images and classifies them
      * @param testing dataset of images to classify
      */
     public void classifyOnTrainingData(GroupedDataset<String, ListDataset<FImage>, FImage> testing){
