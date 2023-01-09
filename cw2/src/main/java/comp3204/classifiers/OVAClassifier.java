@@ -58,16 +58,16 @@ public class OVAClassifier {
 
     /**
      * Constructs a HardAssigner trained on the dataset to perform K-means clustering on feature vectors
-     * @param sample a dataset of images to use for training the HardAssigner
+     * @param images a dataset of images to use for training the HardAssigner
      * @param clusters the number of clusters to assign vectors into
      * @return a HardAssigner class
      */
-    public HardAssigner<float[], float[], IntFloatPair> trainQuantiser(GroupedDataset<String, VFSListDataset<FImage>, FImage> sample, int clusters){
+    public HardAssigner<float[], float[], IntFloatPair> trainQuantiser(GroupedDataset<String, VFSListDataset<FImage>, FImage> images, int clusters){
         List<FloatFV> vectors = new ArrayList<>();
 
         //collect feature vectors from images
         System.out.println("collecting feature vectors...");
-        for(ListDataset<FImage> list : sample.values()) {
+        for(ListDataset<FImage> list : images.values()) {
             for (FImage image : list) {
                 vectors.addAll(extractPatchVectors(image, 8, 4));
             }
